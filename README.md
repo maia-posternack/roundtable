@@ -1,4 +1,4 @@
-# RoundTable: who owes who how much
+# RoundTable: How much do I owe you? 
 
 > RoundTable is currently a work in progress 
 
