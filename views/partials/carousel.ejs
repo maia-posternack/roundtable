@@ -1,0 +1,119 @@
+<div class="container my-4" id = "currentEvents">
+    <!--Carousel Wrapper-->
+    <div id=<%=name%> class="carousel slide carousel-multi-item" data-ride="carousel" >
+
+      <!--Indicators-->
+      <ol class="carousel-indicators">
+        <li data-target=<%=hash%> data-slide-to="0" class="active"></li>
+        <li data-target=<%=hash%> data-slide-to="1"></li>
+      </ol>
+      <!--/.Indicators-->
+
+      <!--Slides-->
+      <div class="carousel-inner" >
+        <% for (let minEvent = 0; minEvent < events.length; minEvent += 3){ %>
+
+        <!--First slide-->
+        <% if(minEvent == 0){ %>
+        <div class="carousel-item active">
+          <% }  else { %>
+            <div class="carousel-item ">
+
+          <% } %>
+
+          <div class="row">
+
+            <% for (var i = minEvent; i < minEvent + 3; i ++){%>
+
+
+            <% if (i==0) { %> <div class="col-md-4"> <% } %>
+              <% if (i> 0){ %> <div class="col-md-4 clearfix d-none d-md-block"> <%}%>
+
+                <% if (events.length > i){ %>
+
+                  <% let guests = [] %>
+                  <% for (let a = 0; a < 4 ; a ++){%>
+                      <% if(a >= events[i].guests.length ) { %>
+                        <% guests.push(" -  ") %>
+                        <% console.log(a,events[i].guests.length) %>
+                        <% } else { %>
+                        <% if(events[i].guests[a] !== user) { %>
+                          <% guests.push(events[i].guests[a]) %>
+                      <% }}}%>
+                      <% console.log("guest length",events[i].guests.length)  %>
+
+                      <% if(events[i].guests.length > 4) { %>
+                        <% console.log("guest length",events[i].guests.length)  %>
+
+                        <% guests[2] = ("...and " + (guests.length -1) +" more") %>
+                        <% }%>
+
+
+
+                        <% if(time !== "pending"){%>
+                  <%let link = "event/" + events[i].id + "/" + time  %>
+                  <a href= <%=link%>  class="event-click">
+
+                    <% }%>
+
+                    <div class="card mb-2">
+                      <img class="card-img-top" src= <%=events[i].image %>
+                        alt="Card image cap">
+                      <div class="card-body">
+                        <h4 class="card-title"> <%=events[i].name %></h4>
+                        <div class="card-text">
+                          <p> <%=guests[0]%></p>
+                          <p> <%=guests[1]%></p>
+                          <p> <%=guests[2]%> </p>
+                          <% if(time == "pending"){%>
+
+                            <%let linkAccept = "window.location.href='/accept/" + events[i].id + "'" %>
+                            <%let linkDecline = "window.location.href='/decline/" + events[i].id + "'" %>
+
+                            <button type="button" onclick=<%=linkAccept%> > Accept </button>
+                            <button type="button" onclick=<%=linkDecline%> > Decline </button>
+
+                          <% }%>
+
+                        </div>
+                      </div>
+                    </div>
+                  </a>
+
+                  <% } else { %>
+
+
+
+                  <% } %>
+              </div>
+
+            <% } //for loop%>
+
+          </div>
+        </div>
+        <%   }//end of slide and minEvent var %>
+
+        <!--/.Second slide-->
+      </div>
+      <!--/.Slides-->
+
+      <% if(events.length >3){ %>
+
+      <a class="carousel-control-prev" href=<%=hash%> role="button" data-slide="prev" color = "black">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="sr-only">Previous</span>
+      </a>
+      <a class="carousel-control-next" href=<%=hash%> role="button" data-slide="next" color = "black">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="sr-only">Next</span>
+      </a>
+      <% } %>
+
+
+
+    </div>
+    <!--/.Carousel Wrapper-->
+
+
+
+  </div>

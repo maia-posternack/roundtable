@@ -1,0 +1,182 @@
+/*index.ejs */
+.carousel-control-prev-icon{
+  filter: invert(100%);
+  margin-left: -150%;
+}
+ .carousel-control-next-icon {
+  filter: invert(100%);
+  margin-right: -150%;
+}
+#multi-item-example{
+  width: 100%;
+  height: auto;
+}
+.card-img-top{
+  height: 80px;
+  width: auto;
+}
+.card-text{
+  line-height: 30%;
+}
+#title-and-buttons{
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+.event-click{
+  color:black
+}
+/*event.ejs */
+#total{
+  background-color: rgba(255, 243, 110,50%);
+  color: black
+}
+.you{
+  background-color: rgba(50, 50, 50,50%);
+  color: black
+}
+.them > .pur_each{
+  color: red
+}
+.you > .pur_price{
+  color: red
+}
+#edit_event{
+  display: block;
+  margin: 0 auto;
+  margin-top: 25px;
+}
+#bottom_buttons{
+  margin-left: 10%;
+}
+
+#purchase_form *{
+  block-size: fit-content;
+}
+
+#purchase_form{
+  width: 100%;
+   overflow: scroll;
+
+
+
+}
+/*complted.ejs */
+#allPurchases{
+margin-left: auto;
+margin-right: auto;
+margin-top: 20px;
+width: 80%;
+}
+#you_owe{
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  margin-top: 25px;
+  color: red;
+}
+#you_paid{
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+#completed_buttons{
+  margin-left: 10%;
+  margin-top: -25px;
+}
+#allPayments{
+margin-left: auto;
+margin-right: auto;
+margin-top: 20px;
+width: 80%;
+}
+#allPayments *{
+  font-weight:normal;
+}
+.unpaid{
+  background-color: rgba(200, 0, 0,50%);
+}
+.paid{
+  background-color: rgba(0, 200, 0,50%);
+}
+/*wallet.ejs */
+
+#transactions *{
+  font-weight:normal;
+
+}
+#transactions{
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+  width: 80%;
+}
+
+tr:hover.trans_unpaid {
+  background-color: darkred;
+}
+
+tr:hover.trans_paid {
+  background-color: darkgreen;
+}
+.trans_unpaid{
+  background-color: rgba(200, 0, 0,50%);
+}
+.trans_paid{
+  background-color: rgba(0, 200, 0,50%);
+}
+#transactions_title{
+margin-left: 5%
+}
+#rating_label{
+  font-size: 10px;
+
+}
+#notlogged{
+  text-align: center;
+  margin-top: 20px;
+  background: grey;
+}
+
+.dot {
+    height: 15px;
+    width: 15px;
+    background-color: red;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+.sec{
+    position: relative;
+    right: -13px;
+    top:-22px;
+}
+
+.counter.counter-lg {
+    top: -24px !important;
+}
+
+.counter{
+  height: 15px;
+  width: 15px;
+  background-color: red;
+  border-radius: 100%;
+  color: white;
+}
+
+#transaction_img{
+  margin: auto;
+  display: block;
+  margin-top: 15px;
+
+  width: 90%;
+  height: 90%;
+  object-fit: contain;
+
+}
+
+#trans_info{
+  margin-left: 10%;
+
+
+}

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="/css/style.css">
+  <script type="text/javascript" src="//code.jquery.com/jquery-1.9.1.js">  </script>
+  <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"> </script>
+</head>
+
+
+<body>
+
+  <%- include('partials/navbar', {currentUser:currentUser}) -%>
+
+<header>
+
+  <!-- Background image -->
+  <div
+    class="p-5 text-center justify-content-center bg-image"
+    style="background: url(<%=event.image%>);
+    background-repeat: no-repeat;
+    background-size: cover;
+    ">
+    <div class="mask" style="background-color: rgba(0, 0, 0, 0.6);">
+      <div class="d-flex justify-content-center align-items-center h-100">
+        <div class="text-white">
+          <h1 class="mb-3"><%=event.name%> </h1>
+          <p id= "total">Total Per Person: $<%=Math.round(100*event.total_cost/(event["guests"].length))/100 %> </p>
+          <% let guests = "" %>
+          <%for (let person of event.guests) { %>
+            <% if (person == currentUser.username){ %>
+              <% guests += ", YOU" %>
+              <% } else { %>
+                <% guests += ", " %>
+                <% guests += person %>
+                <% }}%>
+          <p><%=guests.substr(1)%> </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Background image -->
+</header>
+<div id = "you_owe">
+<% let debts = 0 %>
+<% for (let i in dues[currentUser.username].whatToPay){ %>
+  <% if(dues[currentUser.username].whatToPay[i].completed == false){ %>
+<h4> You owe <%= dues[currentUser.username].whatToPay[i].whoToPay %> $ <%= dues[currentUser.username].whatToPay[i].howMuch %> </h4>
+<% } else { %>
+  <h4> You paid <%= dues[currentUser.username].whatToPay[i].whoToPay %> $ <%= dues[currentUser.username].whatToPay[i].howMuch %> </h4>
+  <p> Two Days:   <img src="../../img/threeStars.png"  height="40" width = "auto"> </p>
+
+
+  <% } %>
+<% debts ++%>
+<% } %>
+<% for (let person in dues){ %>
+<% for(let payment of dues[person].whatToPay) { %>
+<% if(payment.whoToPay ==currentUser.username ){ %>
+  <% if(payment.completed == false) { %>
+  <h4> <%=person %> owes you  $ <%= payment.howMuch %> </h4>
+  <% } else { %>
+    <h4> <%=person %> paid you  $ <%= payment.howMuch %> </h4>
+    <% } %>
+  <% debts ++%>
+<% }}} %>
+<% if(debts == 0 ){ %>
+  <h4> You are all set! You don't owe anyone anything and they don't owe you anthing! </h4>
+  <% } %>
+</div>
+
+<p id = "you_paid"> You initially paid $ <%=dues[currentUser.username].paid %> </p>
+
+<div id="completed_buttons" >
+
+<% if (dues[currentUser.username].whatToPay.length > 0) { %>
+  <% if (dues[currentUser.username].whatToPay[0].completed == false) { %>
+  <%let link = "window.location.href='/paid/" + event.id + "'" %>
+<br>
+ <button type="button" onclick="window.location.href='/venmo'"> Pay with Venmo </button>
+<br>
+ <button type="button" onclick=<%=link %> > I paid with cash</button>
+ <% } else { %>
+   <br>
+   <% } %>
+ <% }else if (debts == 0) { %>
+<% } else {%>
+
+  <% for (let person in dues){ %>
+  <% for(let payment of dues[person].whatToPay) { %>
+  <% if(payment.whoToPay ==currentUser.username ){ %>
+    <% if(payment.completed == false) { %>
+      <br>
+      <% let body = "Remind:" %>
+      <% body += person %>
+      <form action="/email" method="POST" id="email" >
+        <input type="hidden" id="id" name="id" value= <%=event.id%> >
+        <input type="hidden" id="who" name="who" value= <%=person%> >
+        <% console.log("payment",payment.howMuch, "user", currentUser.username) %>
+        <input type="hidden" id="amount" name="amount" value= <%=payment.howMuch%> >
+        <input type="hidden" id="current" name="current" value= <%=currentUser.username%> >
+        <% console.log(body)%>
+        <input type="submit" value=<%=body %> id = "submit_pur">
+
+    </form>
+    <p> <%=email %> </p>
+
+    <% } else {%>
+      <br>
+  <% }}}} }%>
+
+</div>
+
+
+<table id = "allPayments">
+
+  <% for (let person in dues){ %>
+  <% for(let payment of dues[person].whatToPay) { %>
+    <% if (payment) { %>
+      <% console.log(payment) %>
+      <% if (payment.completed == false) { %>
+        <tr class = "unpaid">
+      <% } else { %>
+        <tr class = "paid">
+      <%}%>
+      <% if (person ==currentUser.username){ %>
+        <th class = "pay_user">YOU </th>
+      <% } else { %>
+      <th class = "pay_user"> <%=person %> </th>
+      <% } %>
+      <th class = "pay_amount"> owes $<%=payment.howMuch%> to </th>
+      <% if (payment.whoToPay ==currentUser.username){ %>
+        <th class = "pay_owe"> YOU </th>
+        <% } else { %>
+      <th class = "pay_owe"> <%=payment.whoToPay%> </th>
+      <% }if (payment.completed == false) { %>
+        <th class = "pay_emoji"> ❌</th>
+      <% } else { %>
+        <th class = "pay_emoji"> ✅</th>
+      <%}}}}%>
+    </tr>
+
+</table>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+</body>
+
+</html>

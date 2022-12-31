@@ -1,0 +1,87 @@
+<html>
+<head>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="/css/style.css">
+  <script type="text/javascript" src="//code.jquery.com/jquery-1.9.1.js">  </script>
+  <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"> </script>
+  <script src="/socket.io/socket.io.js"></script>
+
+</head>
+<body>
+  <%- include('partials/navbar', {currentUser:currentUser}) -%>
+  <%let link = "window.location.href='/event/" + transEvent + "/active'" %>
+  <h5> Discuss a Dispute Below </h5>
+  <p> <i> <%=disputer %> has disputed '<%=transDesc%>' for $<%=transPrice%> because '<%=reason%> ' <%=transUser%> originally made this purchase. </i> </p>
+
+  <% if (currentUser.username == disputer) { %>
+    <p> As the disputer you may resolve this dispute </p>
+
+    <form action="/resolve" method="POST" id="resolve_form" >
+        <input type="hidden" id="trans_id" name="trans_id" value= <%=transId %> >
+        <input type="hidden" id="event_id" name="event_id" value= <%=transEvent %> >
+      <input type="submit" value="Resolve Dispute" id = "submitted" >
+    </form>
+    <button type="button" onclick= <%= link %> > Return To Event</button>
+
+
+
+<% } else { %>
+  <p> Only the disputer my resolve this dispute </p>
+  <% }%>
+
+
+
+  <div id="messages">
+   <textarea id="messagesDisplay" name="story"
+          rows="20" cols="50">
+  </textarea><br>
+  <input type="text" id="messageInput"><button type="button" id="sendButton">Send</button><br>
+
+  </div>
+  <span id="numClientsDisplay">Participants: 0<span>
+  <script>
+  var socket = io();
+
+
+
+    socket.emit('connectionEvent', {userFirstName:'<%=currentUser.username%>'});
+
+    socket.on('announcement', function(data) {
+        console.log(data)
+        let mDisplay = document.getElementById('messagesDisplay');
+        let text ="";
+        if(data.userFirstName)
+           text = data.userFirstName+": "+data.message+"\n";
+        else
+           text = data.message+"\n";
+        mDisplay.value +=text;
+    });
+
+    socket.on('connectionEvent', function(data) {
+        //keep track of the current number of participants in the numClientsDisplay span
+        let numClientsDisplay = document.getElementById('numClientsDisplay');
+        let text = "Participants: " + data.numClients;
+        numClientsDisplay.innerText = text;
+        let mDisplay = document.getElementById('messagesDisplay');
+
+        text = data.userFirstName+": "+data.message+"\n";
+
+        mDisplay.value =  mDisplay.value.trim()+text;
+    }); 
+
+    document.getElementById("sendButton").addEventListener('click', function(){
+      let messageData = document.getElementById("messageInput").value;
+      console.log("sending: "+messageData);
+      socket.emit('announcement', { userFirstName:'<%=currentUser.username%>', message: messageData });
+    });
+
+</script>
+
+
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+</html>

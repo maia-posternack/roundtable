@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="/css/style.css">
+  <script type="text/javascript" src="//code.jquery.com/jquery-1.9.1.js">  </script>
+  <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"> </script>
+</head>
+
+
+<body>
+
+
+  <%- include('partials/navbar', {currentUser:currentUser}) -%>
+<header>
+
+  <!-- Background image -->
+  <div
+    class="p-5 text-center justify-content-center bg-image"
+    style="background: url(<%=event.image%>);
+    background-repeat: no-repeat;
+    background-size: cover;
+    ">
+    <div class="mask" style="background-color: rgba(0, 0, 0, 0.6);">
+      <div class="d-flex justify-content-center align-items-center h-100">
+        <div class="text-white">
+          <h1 class="mb-3"><%=event.name%> </h1>
+          <p id= "total">Total Per Person: $<%=Math.round(100*event.total_cost/(event["guests"].length))/100 %> </p>
+          <% let guests = "" %>
+          <%for (let person of event.guests) { %>
+            <% if (person == currentUser.username){ %>
+              <% guests += ", YOU" %>
+              <% } else { %>
+                <% guests += ", " %>
+                <% guests += person %>
+                <% }}%>
+          <p><%=guests.substr(1)%> </p>
+
+
+          <p> Event Invite Code: <%=event.invite_code%>
+
+            <div id = "add_friend" >
+
+
+              <div class="dropdown">
+                      <button class="  dropdown-toggle"
+                          type="button" id="dropdownMenuButton"
+                          data-toggle="dropdown" aria-haspopup="true"
+                          aria-expanded="false"> Add Friend    </button>
+
+                      <div class="dropdown-menu" id="myDropdown"
+                          aria-labelledby="dropdownMenuButton" style="width: 90%;" >
+                          <a class="dropdown-item" href="#">
+                              <form action="/addFriend" method="POST" id="friend_form" >
+                                <label for="name"> Username </label>
+
+                                <select name="friend_name" id="name" >
+                                  <% for (let i of nonInvited) { %>
+                                    <option value=<%=i%> ><%=i%></option>
+                                    <% } %>
+                                  </select>
+                                  <input type="hidden" id="id" name="id" value= <%=event.id%>>
+                                <input type="submit" value="Invite" id = "submitted" >
+                              </form>
+
+                          </a>
+
+                      </div>
+                  </div>
+                </div>
+
+          </p>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Background image -->
+</header>
+
+<button type="button" id = "edit_event"> Edit Event Details </button>
+
+<table id = "allPurchases">
+
+  <% for(let index of trans) { %>
+    <% console.log(index.user, currentUser.email) %>
+    <% if (index.user !== currentUser.email){%>
+      <tr class = "them">
+
+      <th class = "pur_name"> <%= index.username %> </th>
+      <%} else { %>
+
+      <tr class = "you">
+      <th class = "pur_name">YOU</th>
+      <%} %>
+      <th class = "pur_type"> <%= index.desc %> </th>
+      <% if (index.receipt !== ""){ %>
+        <%let trans_link = "window.location.href='/transaction/" + index.id + "'" %>
+
+      <th class = "pur_rec"> <button type="button" onclick= <%= trans_link %> > 🧾</button> </th>
+      <% }else{ %>
+      <th class = "pur_rec"></th>
+      <% } %>
+
+
+      <th class = "pur_price">$ <%=index.price %> </th>
+      <th class = "pur_each">$<%=Math.round(100*index.price/event["guests"].length)/100%> /person</th>
+      <% if (index.dispute.length > 0){ %>
+        <%let dispute_link = "window.location.href='/disputeChat/" + index.id + "'" %>
+        <th class = "pur_dispute" onclick= <%= dispute_link %> > DISPUTED </th>
+        <% } %>
+
+
+
+    </tr>
+
+    <% }  %>
+
+</table>
+<br>
+<div id="bottom_buttons" >
+  <div class="dropdown">
+          <button class="  dropdown-toggle"
+              type="button" id="dropdownMenuButton"
+              data-toggle="dropdown" aria-haspopup="true"
+              aria-expanded="false"> Input Your Purchase    </button>
+
+          <div class="dropdown-menu" id="myDropdown"
+              aria-labelledby="dropdownMenuButton" style="width: 90%;" >
+              <a class="dropdown-item" href="#">
+                  <form action="/newTransaction" enctype="multipart/form-data" method="POST" id="purchase_form" >
+                    <label for="desc"> Purchase Description </label>
+                    <input type="text" id="desc" name="purchase_desc" value=""><br>
+                    <label for="price"> Purchase Price </label>
+                    <input type="text" id="price" name="purchase_price" value=""><br>
+
+                    <label for="picture"> (Optional) Upload A Receipt </label>
+                    <input type="file" id="picture" name="picture" accept="image/*"> <br>
+
+                    <input type="hidden" id="id" name="id" value= <%=event.id%>>
+
+
+                    <input type="submit" value="Submit" id = "submit_pur">
+                  </form>
+
+              </a>
+
+          </div>
+      </div>
+<div class="dropdown">
+        <button class="  dropdown-toggle"
+            type="button" id="dispute"
+            data-toggle="dropdown" aria-haspopup="true"
+            aria-expanded="false"> Dispute A Purchase   </button>
+
+        <div class="dropdown-menu" id="disputeDropDown"
+            aria-labelledby="dispute" style="width: 90%;" >
+            <a class="dropdown-item" href="#">
+                <form action="/dispute" method="POST" id="dispute_form" >
+                  <label for="what"> I'd like to dispute:  </label>
+
+                  <select name="dispute_trans" id="what" >
+                    <% for(let index of trans) { %>
+                      <option value=<%=index.id%>  > <%=index.desc %> for $ <%=index.price %> </option>
+                      <% } %>
+
+                    </select>
+
+                    <label for="why"> Because: </label>
+                    <input type="text" id="why" name="dispute_reason" value=""><br>
+                    <input type="hidden" id="id" name="id" value= <%=event.id%>>
+
+                  <input type="submit" value="Send Dispute" id = "submitted" >
+                </form>
+
+            </a>
+
+        </div>
+    </div>
+
+<br>
+     <%let link = "window.location.href='/eventDues/" + event.id + "'" %>
+ <button type="button" onclick= <%= link %> > End Event</button>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+</body>
+
+</html>
